@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Html } from "@react-three/drei";
 import React from "react";
 
