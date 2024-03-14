@@ -14,16 +14,16 @@ import { useFrame, useThree } from "@react-three/fiber";
 import islandScene from "../assets/3d/issum_the_town_on_capital_isle.glb";
 import { a } from "@react-spring/three";
 
-const Island = ({ rotating, setIsRotating, ...props }) => {
+const Island = ({ isRotating, setIsRotating, ...props }) => {
   const islandRef = useRef();
   const { gl, viewport } = useThree();
   const { nodes, materials } = useGLTF(islandScene);
 
   const lastX = useRef(0); // Position de la souris
   const rotationSpeed = useRef(0); // Vitesse de rotation de l'île
-  const dumpingFactor = 0.95; // Poursuite de la rotation sur élan donné par la souris
+  const dampingFactor = 0.95; // Poursuite de la rotation sur élan donné par la souris
 
-  // Clique permanent souris
+  // Clique maintenu souris
   const handlePointerDown = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -37,12 +37,60 @@ const Island = ({ rotating, setIsRotating, ...props }) => {
     e.stopPropagation();
     e.preventDefault();
     setIsRotating(false);
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const delta = (clientX - lastX.current) / viewport.width; // Différence entre l'abscisse au clique et fin de clique
+    islandRef.current.rotation.y = delta * 0.01 * Math.PI; // On attribue à l'île une rotation proportionnelle à delta et en forme circulaire grâce à Math.PI, le 0.01 est un coefficient permettant de régler la sensibilité de la rotation
+    lastX.current = clientX; // On met à jour la valeur suivant la dernière position de la souris
   };
   // Mouvement souris
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
+    if (isRotating) handlePointerUp(e);
   };
+  // Mouvement par flèches clavier
+  const handleKeyDown = () => {
+    if (e.key === "ArrowLeft") {
+      if (!isRotating) setIsRotating(true);
+      islandRef.current.rotation.y += 0.01 * Math.PI;
+    } else if (e.key === "ArrowRight") {
+      if (!isRotating) setIsRotating(true);
+      islandRef.current.rotation.y -= 0.01 * Math.PI;
+    }
+  };
+  const handleKeyUp = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") setIsRotating(false);
+  };
+
+  useFrame(() => {
+    if (!isRotating) {
+      rotationSpeed.current *= dampingFactor;
+    }
+  });
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("mouseup", handlePointerUp);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("mouseup", handlePointerUp);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [
+    gl,
+    handlePointerDown,
+    handlePointerUp,
+    handlePointerMove,
+    handleKeyDown,
+    handleKeyUp,
+  ]);
 
   return (
     <a.group ref={islandRef} {...props}>
