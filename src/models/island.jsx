@@ -37,20 +37,21 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
     e.stopPropagation();
     e.preventDefault();
     setIsRotating(false);
-
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const delta = (clientX - lastX.current) / viewport.width; // Différence entre l'abscisse au clique et fin de clique
-    islandRef.current.rotation.y = delta * 0.01 * Math.PI; // On attribue à l'île une rotation proportionnelle à delta et en forme circulaire grâce à Math.PI, le 0.01 est un coefficient permettant de régler la sensibilité de la rotation
-    lastX.current = clientX; // On met à jour la valeur suivant la dernière position de la souris
   };
   // Mouvement souris
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    if (isRotating) handlePointerUp(e);
+    if (isRotating) {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const delta = (clientX - lastX.current) / viewport.width; // Différence entre l'abscisse au clique et fin de clique
+      islandRef.current.rotation.y += delta * 0.01 * Math.PI; // On attribue à l'île une rotation proportionnelle à delta et en forme circulaire grâce à Math.PI, le 0.01 est un coefficient permettant de régler la sensibilité de la rotation
+      lastX.current = clientX; // On met à jour la valeur suivant la dernière position de la souris
+      rotationSpeed.current = delta * 0.01 * Math.PI;
+    }
   };
   // Mouvement par flèches clavier
-  const handleKeyDown = () => {
+  const handleKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
       if (!isRotating) setIsRotating(true);
       islandRef.current.rotation.y += 0.01 * Math.PI;
@@ -65,21 +66,48 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
 
   useFrame(() => {
     if (!isRotating) {
-      rotationSpeed.current *= dampingFactor;
+      rotationSpeed.current *= dampingFactor; // Si rotation false, la vitesse de rotation baissera progressivement
+      if (Math.abs(rotationSpeed.current) < 0.001) {
+        rotationSpeed.current = 0; // Si la vitesse de rotation est inférieure à 0.001, on la met à 0
+      }
+    } else {
+      // si rotation
+      const rotation = islandRef.current.rotation.y; // On récupère la valeur de la rotation
+      const normalizedRotation =
+        ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+      // Set the current stage based on the island's orientation
+      // switch (true) {
+      //   case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
+      //     setCurrentStage(4);
+      //     break;
+      //   case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
+      //     setCurrentStage(3);
+      //     break;
+      //   case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
+      //     setCurrentStage(2);
+      //     break;
+      //   case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
+      //     setCurrentStage(1);
+      //     break;
+      //   default:
+      //     setCurrentStage(null);
+      // }
     }
   });
 
   useEffect(() => {
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("mouseup", handlePointerUp);
-    document.addEventListener("mousedown", handlePointerDown);
+    const canvas = gl.domElement; // nous avons wrappé dans Home le tout dans <Canvas/>
+    canvas.addEventListener("mousedown", handlePointerDown); // On ne touche pas l'écran (DOM (document)) mais le canvas en cliquant avec la souris
+    canvas.addEventListener("mouseup", handlePointerUp);
+    canvas.addEventListener("mousemove", handlePointerMove);
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("mouseup", handlePointerUp);
-      document.removeEventListener("mousedown", handlePointerDown);
+      canvas.removeEventListener("mousedown", handlePointerDown);
+      canvas.removeEventListener("mouseup", handlePointerUp);
+      canvas.removeEventListener("mousemove", handlePointerMove);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
@@ -95,7 +123,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
   return (
     <a.group ref={islandRef} {...props}>
       <a.group rotation={[-Math.PI / 2, 0, 0]}>
-        <mesh
+        {/* <mesh
           geometry={nodes.Plane_0.geometry}
           material={materials.Wizard}
           position={[8.306, 9.523, 4.53]}
@@ -108,15 +136,15 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-4.292, 20.285, -0.072]}
           rotation={[0.385, -0.209, 1.404]}
           scale={0.22}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes["Sheep-ver1017_0"].geometry}
           material={materials["Material.007"]}
           position={[-3.617, 13.851, 7.605]}
           rotation={[0.481, 0.218, -2.444]}
           scale={0.248}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes["Sheep-ver1016_0"].geometry}
           material={materials["Material.007"]}
           position={[-3.613, 13.779, 7.574]}
@@ -150,8 +178,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-6.421, 15.332, 8.341]}
           rotation={[0.108, 0.247, -1.704]}
           scale={0.263}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes["Sheep-ver1003_0"].geometry}
           material={materials["Material.007"]}
           position={[-6.716, 15.698, 8.502]}
@@ -185,8 +213,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-2.693, 16.867, 8.039]}
           rotation={[0.181, 0.062, 2.845]}
           scale={0.26}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes["Sheep-ver1006_0"].geometry}
           material={materials["Material.007"]}
           position={[-2.479, 17.118, 8.034]}
@@ -227,7 +255,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-4.533, 15.599, 7.972]}
           rotation={[0.183, 0.071, 2.435]}
           scale={0.248}
-        />
+        /> */}
+        //////////////////////////////////////////////////////////////////////////////
         <mesh
           geometry={nodes.mff_island_large_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -238,7 +267,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           material={materials.medievalfantasyforest_unwrap}
           position={[19.374, 3.504, 0]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_4_AO001_0.geometry}
           material={materials.House_4_AO_tex}
           position={[19.241, 6.775, 1.864]}
@@ -265,7 +294,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-2.393, -6.781, 8.166]}
           rotation={[Math.PI / 2, -1.096, 0]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.Tower_1_AO001_0.geometry}
           material={materials.Tower_tex_1}
@@ -273,7 +302,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-Math.PI / 2, -1.414, -Math.PI]}
           scale={0.3}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.HouseBase_8_AO003_0.geometry}
           material={materials.StoneWall}
           position={[15.799, -4.508, -0.25]}
@@ -293,7 +322,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[12.098, 4.217, 1.422]}
           rotation={[Math.PI / 2, 0.743, 0]}
           scale={0.5}
-        />
+        /> */}
         <mesh
           geometry={nodes.Tower_2_AO001_0.geometry}
           material={materials.Tower_tex_2}
@@ -315,13 +344,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.767, 0.423, -0.098]}
           scale={0.3}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_4_AO002_0.geometry}
           material={materials.House_4_AO_tex}
           position={[17.884, 0.913, 1.8]}
           rotation={[1.819, 1.037, -0.131]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.House_3_AO002_0.geometry}
           material={materials.House_3_AO_tex}
@@ -371,7 +400,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.389, -0.33, -0.271]}
           scale={0.4}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Green_2_AO002_0.geometry}
           material={materials["Material.003"]}
           position={[-3.051, 13.222, 7.591]}
@@ -433,8 +462,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[0.191, 16.866, 7.471]}
           rotation={[1.509, -0.815, -0.108]}
           scale={0.4}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Clean_8_AO001_0.geometry}
           material={materials["Material.001"]}
           position={[0.098, 16.292, 7.452]}
@@ -475,8 +504,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[20.405, 5.954, 1.795]}
           rotation={[0.064, 0.198, 0.014]}
           scale={0.2}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_path_0002_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[17.724, 4.328, 1.93]}
@@ -489,7 +518,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[20.92, 5.831, 1.68]}
           rotation={[0.023, 0.204, 1.966]}
           scale={[0.399, 0.396, 0.215]}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_1_AO001_0.geometry}
           material={materials["Material.009"]}
@@ -539,7 +568,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.724, 0.643, -0.106]}
           scale={[0.153, 0.226, 0.155]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Paving_3_AO002_0.geometry}
           material={materials["Material.009"]}
           position={[16.997, 2.722, 2.048]}
@@ -552,14 +581,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[17.451, 3.174, 2.024]}
           rotation={[1.692, 0.751, -0.204]}
           scale={[0.104, 0.177, 0.103]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_path_1003_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[16.592, 3.022, 2.05]}
           rotation={[-0.01, -0.065, -0.716]}
           scale={0.248}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_4_AO003_0.geometry}
           material={materials["Material.009"]}
@@ -567,7 +596,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.476, -0.426, -0.021]}
           scale={0.201}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Paving_4_AO004_0.geometry}
           material={materials["Material.009"]}
           position={[18.644, 5.506, 1.891]}
@@ -580,7 +609,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[19.922, 6.128, 1.87]}
           rotation={[1.825, 0.929, -0.253]}
           scale={[0.135, 0.23, 0.134]}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_4_AO005_0.geometry}
           material={materials["Material.009"]}
@@ -588,7 +617,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.463, 0.663, 0.126]}
           scale={0.363}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_tree_pine_2001_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-0.771, -8.75, 4.042]}
@@ -601,7 +630,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[7.817, -2.131, 2.252]}
           rotation={[-0.132, -0.046, 0.204]}
           scale={[0.85, 0.832, 1.145]}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_pine_2003_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -609,7 +638,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-0.073, 0.076, 2.047]}
           scale={[1.574, 1.582, 2.328]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_tree_pine_0001_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[8.765, -6.2, 2.966]}
@@ -620,7 +649,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           geometry={nodes.mff_tree_pine_1001_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[4.49, -7.101, 3.337]}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_pine_1002_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -634,7 +663,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.113, 0, 0.862]}
           scale={0.622}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_tree_maple002_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[2.252, -8.728, 3.623]}
@@ -647,7 +676,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[10.722, -2.01, 2.231]}
           rotation={[0.043, -0.019, 2.885]}
           scale={[0.587, 0.589, 0.762]}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_maple004_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -655,7 +684,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.016, -0.044, 2.064]}
           scale={[0.35, 0.351, 0.349]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_tree_pine_0002_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[6.642, -0.479, 2.372]}
@@ -668,7 +697,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[5.925, -2.697, 2.477]}
           rotation={[-0.045, 0.157, 1.612]}
           scale={0.5}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_pine_1004_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -690,7 +719,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.096, -0.102, 2.2]}
           scale={[1.022, 1.005, 1.659]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes["Sheep-ver1010_0"].geometry}
           material={materials["Material.007"]}
           position={[-6.322, 16.384, 8.623]}
@@ -717,14 +746,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-6.072, 16.421, 8.576]}
           rotation={[0.342, 0.209, -2.682]}
           scale={0.231}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.TreeTrunk001_0.geometry}
           material={materials["Material.012"]}
           position={[10.92, -3.038, 2.268]}
           rotation={[-0.105, 0.161, 0.539]}
           scale={0.251}
-        />
+        /> */}
         <mesh
           geometry={nodes.TreeTrunk002_0.geometry}
           material={materials["Material.012"]}
@@ -732,7 +761,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.179, 0.07, -1.244]}
           scale={0.178}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_1_AO001_0.geometry}
           material={materials["Material.013"]}
           position={[17.932, -5.771, 0.28]}
@@ -759,8 +788,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[11.265, -14.92, 0]}
           rotation={[0, 0, -1.86]}
           scale={[5.002, 5.002, 3.193]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stones_4_AO001_0.geometry}
           material={materials["Material.013"]}
           position={[23.672, 6.539, 0.141]}
@@ -786,8 +815,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[17.106, -0.562, -0.538]}
           rotation={[Math.PI / 2, -1.445, 0]}
           scale={3.02}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stones_3_AO002_0.geometry}
           material={materials["Material.013"]}
           position={[24.546, 0.96, 0.09]}
@@ -821,8 +850,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-3.453, -3.795, 8.614]}
           rotation={[0.626, -1.225, -0.839]}
           scale={1.294}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Cube000_0.geometry}
           material={materials.Wizard}
           position={[-1.797, -8.088, 8.169]}
@@ -834,7 +863,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-9.669, -9.584, 5.151]}
           rotation={[-2.991, 0, 0]}
           scale={1.345}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_1_AO007_0.geometry}
           material={materials["Material.009"]}
@@ -842,7 +871,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.676, 0.099, -1.601]}
           scale={0.749}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_1_AO006_0.geometry}
           material={materials["Material.013"]}
           position={[9.648, 16.35, 6.061]}
@@ -876,8 +905,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-3.318, -4.282, 8.678]}
           rotation={[1.35, 0.019, -0.284]}
           scale={2.529}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_mossy_0003_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-5.18, -7.64, -0.383]}
@@ -917,7 +946,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[19.251, -0.798, 1.186]}
           rotation={[0, 0, -2.916]}
           scale={[1.764, 1.764, 3.498]}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_pine_1005_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -953,7 +982,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.025, 0.154, 1.312]}
           scale={[0.387, 0.39, 0.488]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_4_AO008_0.geometry}
           material={materials["Material.013"]}
           position={[0.391, 9.854, 6.687]}
@@ -987,7 +1016,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-10.557, 16.327, 1.009]}
           rotation={[0.101, -0.583, -1.398]}
           scale={1.63}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_stone_0007_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -1002,7 +1031,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[Math.PI / 2, 1.554, 0]}
           scale={0.171}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_4_AO009_0.geometry}
           material={materials["Material.013"]}
           position={[1.808, -9.162, 2.231]}
@@ -1029,7 +1058,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-1.25, -9.295, 3.139]}
           rotation={[0, 0, 2.215]}
           scale={0.599}
-        />
+        /> */}
         <mesh
           geometry={nodes.Stones_1_AO009_0.geometry}
           material={materials["Material.013"]}
@@ -1037,7 +1066,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-1.1, 0.931, -3.001]}
           scale={0.628}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_3_AO004_0.geometry}
           material={materials["Material.013"]}
           position={[-2.437, -11.329, -0.106]}
@@ -1071,7 +1100,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[24.296, 4.635, 0.303]}
           rotation={[-3.14, 0.169, 3.035]}
           scale={[0.626, 0.638, 0.217]}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_stone_0013_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -1114,7 +1143,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0, 0, 0.911]}
           scale={0.22}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.VikingShipObjects000_0.geometry}
           material={materials.Objects}
           position={[1.637, -10.814, 2.496]}
@@ -1197,8 +1226,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[4.51, -5.048, 6.856]}
           rotation={[-1.997, -0.304, -0.942]}
           scale={0.37}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_0014_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[4.33, -0.004, 6.081]}
@@ -1288,7 +1317,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-17.022, 5.992, 1.587]}
           rotation={[-2.03, 0.357, 1.934]}
           scale={1.652}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_stone_0016_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -1373,7 +1402,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[Math.PI / 2, 1.353, 0]}
           scale={1.469}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_stone_0017_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-15.183, -6.622, 0.175]}
@@ -1414,8 +1443,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[12.614, -0.415, 0.398]}
           rotation={[0.128, -0.469, 0.109]}
           scale={0.804}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_0022_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[9.323, -6.667, 0.089]}
@@ -1428,8 +1457,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[1.477, 7.488, 4.773]}
           rotation={[-1.94, 0.319, 0.162]}
           scale={0.819}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stones_4_AO012_0.geometry}
           material={materials["Material.013"]}
           position={[4.98, 11.132, 5.272]}
@@ -1442,7 +1471,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[5.405, 8.664, 4.097]}
           rotation={[-1.935, 0.719, -0.082]}
           scale={[0.72, 0.56, 0.722]}
-        />
+        /> */}
         <mesh
           geometry={nodes.Stones_3_AO008_0.geometry}
           material={materials["Material.013"]}
@@ -1457,14 +1486,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-1.726, -0.149, -2.844]}
           scale={1.134}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_stone_0025_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[1.516, 3.364, 7.541]}
           rotation={[2.687, 0.84, 0.341]}
           scale={[0.533, 0.414, 0.535]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_0026_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-4.529, -0.971, 8.513]}
@@ -1484,7 +1513,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[3.471, -5.439, 8.142]}
           rotation={[-2.406, -0.629, -2.387]}
           scale={[0.097, 0.075, 0.097]}
-        />
+        /> */}
         <mesh
           geometry={nodes.Stones_1_AO013_0.geometry}
           material={materials["Material.013"]}
@@ -1499,14 +1528,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.658, 0.057, -0.069]}
           scale={0.61}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_stone_0029_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-3.148, -6.868, 8.349]}
           rotation={[-0.319, 0.281, 0.784]}
           scale={0.22}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stone_Circle001_0.geometry}
           material={materials.Stone_Circle_Mat}
           position={[19.857, 3.871, 1.855]}
@@ -1526,8 +1555,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[19.857, 3.871, 1.816]}
           rotation={[Math.PI / 2, -0.507, 0]}
           scale={0.3}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stones_3_AO011_0.geometry}
           material={materials["Material.013"]}
           position={[16.346, 4.075, 1.985]}
@@ -1554,8 +1583,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[19.432, 9.013, -0.034]}
           rotation={[-1.32, 0.948, 2.326]}
           scale={0.425}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Tower_3_AO001_0.geometry}
           material={materials.Tower_tex_3}
           position={[-4.523, -22.225, 1.941]}
@@ -1575,8 +1604,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-6.06, 15.74, 1.085]}
           rotation={[-0.499, 0.725, 1.302]}
           scale={2.532}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stones_4_AO013_0.geometry}
           material={materials["Material.013"]}
           position={[-0.046, 20.664, -0.271]}
@@ -1596,7 +1625,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-17.799, 23.815, -0.271]}
           rotation={[-Math.PI / 2, 1.442, Math.PI]}
           scale={[4.28, 2.427, 4.28]}
-        />
+        /> */}
         <mesh
           geometry={nodes["Castle-stairs001_0"].geometry}
           material={materials["Material.007"]}
@@ -1693,14 +1722,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0, 0, Math.PI / 2]}
           scale={[0.246, 0.3, 0.3]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Paving_3_AO004_0.geometry}
           material={materials["Material.009"]}
           position={[-8.964, -2.521, 11.418]}
           rotation={[1.349, 0, -1.585]}
           scale={[0.278, 0.329, 0.329]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Stones_1_AO015_0.geometry}
           material={materials["Material.013"]}
           position={[-11.541, -4.433, 10.804]}
@@ -1747,7 +1776,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-8.475, -4.206, 11.139]}
           rotation={[2.125, -1.109, 0.677]}
           scale={0.613}
-        />
+        /> */}
         <mesh
           geometry={nodes.VikingShipObjects028_0.geometry}
           material={materials.Objects}
@@ -2077,13 +2106,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0, 0, 1.578]}
           scale={[0.429, 0.3, 0.3]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Cube001_0.geometry}
           material={materials["Material.021"]}
           position={[-10.767, 9.753, 10.784]}
           rotation={[0.013, 0.048, 1.206]}
           scale={[0.334, 0.199, 0.006]}
-        />
+        /> */}
         <mesh
           geometry={nodes.House_1_AO003_0.geometry}
           material={materials.House_1_AO_tex}
@@ -2091,7 +2120,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-Math.PI / 2, 0.299, -Math.PI]}
           scale={0.3}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_2_AO003_0.geometry}
           material={materials.House_2_AO_tex}
           position={[-14.964, 12.312, 10.631]}
@@ -2118,8 +2147,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-11.789, 14.272, 10.597]}
           rotation={[-Math.PI / 2, -0.331, Math.PI]}
           scale={0.3}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.House_3_AO003_0.geometry}
           material={materials.House_3_AO_tex}
           position={[-9.715, 14.616, 10.539]}
@@ -2153,7 +2182,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-4.829, 12.586, 10.192]}
           rotation={[Math.PI / 2, 1.038, 0]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.House_2_AO006_0.geometry}
           material={materials.House_2_AO_tex}
@@ -2161,7 +2190,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-1.62, 0.589, -3.115]}
           scale={0.3}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_1_AO006_0.geometry}
           material={materials.House_1_AO_tex}
           position={[-7.103, 13.679, 10.352]}
@@ -2181,7 +2210,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-2.395, 6.198, 10.274]}
           rotation={[-Math.PI / 2, -0.268, -Math.PI]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.House_2_AO008_0.geometry}
           material={materials.House_2_AO_tex}
@@ -2217,13 +2246,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[Math.PI / 2, 1.075, 0]}
           scale={0.3}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_4_AO006_0.geometry}
           material={materials.House_4_AO_tex}
           position={[-5.423, 10.536, 10.262]}
           rotation={[1.569, 0.916, -0.042]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.Well_AO002_0.geometry}
           material={materials["Material.020"]}
@@ -2266,7 +2295,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0, 0, -3.125]}
           scale={0.451}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_3_AO014_0.geometry}
           material={materials["Material.013"]}
           position={[-5.301, 2.467, 9.712]}
@@ -2286,7 +2315,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-12.063, -8.769, 10.975]}
           rotation={[-1.031, -0.022, 3.065]}
           scale={0.797}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_pine_2007_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -2378,7 +2407,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-0.028, -0.037, 1.075]}
           scale={[0.502, 0.504, 0.574]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes["Shelter-half004_0"].geometry}
           material={materials["Material.007"]}
           position={[-14.23, 5.052, 11.151]}
@@ -2398,7 +2427,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-2.075, 1.73, 9.953]}
           rotation={[-Math.PI / 2, -1.423, Math.PI]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.Shelter001_0.geometry}
           material={materials["Material.007"]}
@@ -2419,7 +2448,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-Math.PI / 2, 1.248, Math.PI]}
           scale={0.4}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Clean_3_AO004_0.geometry}
           material={materials["Material.001"]}
           position={[-17.321, 7.215, 10.454]}
@@ -2460,8 +2489,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-16.832, 10.369, 10.454]}
           rotation={[1.326, 1.278, 0.234]}
           scale={0.4}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Clean_3_AO010_0.geometry}
           material={materials["Material.001"]}
           position={[-16.621, 10.971, 10.454]}
@@ -2502,7 +2531,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-15.141, 13.783, 10.454]}
           rotation={[1.478, 0.634, 0.05]}
           scale={0.4}
-        />
+        /> */}
         <mesh
           geometry={nodes.Fencing_Wood_Clean_3_AO016_0.geometry}
           material={materials["Material.001"]}
@@ -2853,13 +2882,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.102, -0.073, 0.698]}
           scale={[0.35, 0.351, 0.349]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.HouseBase_7_AO002_0.geometry}
           material={materials.StoneWall}
           position={[-2.149, 1.683, 8.582]}
           rotation={[-Math.PI / 2, -1.09, Math.PI]}
           scale={0.5}
-        />
+        /> */}
         <mesh
           geometry={nodes.VikingShipObjects035_0.geometry}
           material={materials.Objects}
@@ -2916,7 +2945,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0, 0, 2.223]}
           scale={0.22}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.VikingShipObjects045_0.geometry}
           material={materials.Objects}
           position={[-12.01, 1.703, 10.924]}
@@ -2943,7 +2972,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-13.265, 2.662, 11.855]}
           rotation={[0, 0, 2.31]}
           scale={0.22}
-        />
+        /> */}
         <mesh
           geometry={nodes.VikingShipObjects134_0.geometry}
           material={materials.Objects}
@@ -2978,7 +3007,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.046, 0.109, -0.04]}
           scale={0.239}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.VikingShipObjects140_0.geometry}
           material={materials.Objects}
           position={[-10.443, 0.262, 11.679]}
@@ -3082,8 +3111,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-10.443, 3.877, 10.626]}
           rotation={[-1.282, 0.41, -0.31]}
           scale={0.22}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.VikingShipObjects155_0.geometry}
           material={materials.Objects}
           position={[-11.07, 2.036, 10.751]}
@@ -3124,7 +3153,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-12.051, 3.99, 11.05]}
           rotation={[-0.734, 0.435, -0.171]}
           scale={0.22}
-        />
+        /> */}
         <mesh
           geometry={nodes.VikingShipObjects161_0.geometry}
           material={materials.Objects}
@@ -3174,7 +3203,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-0.343, -0.353, 0.632]}
           scale={0.22}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.VikingShipObjects168_0.geometry}
           material={materials.Objects}
           position={[-12.393, 5.265, 10.833]}
@@ -3208,8 +3237,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-13.003, 1.426, 10.907]}
           rotation={[-0.486, -0.001, -0.128]}
           scale={0.22}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.VikingShipObjects173_0.geometry}
           material={materials.Objects}
           position={[-8.951, 3.976, 10.677]}
@@ -3229,14 +3258,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-12.14, 4.04, 10.767]}
           rotation={[-0.605, -0.042, 3.019]}
           scale={0.22}
-        />
+        /> */}
         <mesh
           geometry={nodes.pCube119001_0.geometry}
           material={materials["Material.035"]}
           position={[23.369, -3.407, -0.505]}
           rotation={[-Math.PI / 2, 0.702, -Math.PI]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.pCube119002_0.geometry}
           material={materials["Material.035"]}
           position={[25.854, -5.502, -0.505]}
@@ -3248,8 +3277,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-11.708, 12.703, 10.605]}
           rotation={[-0.018, 0.025, -0.812]}
           scale={0.608}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.bench002_0.geometry}
           material={materials.bench_mat}
           position={[-9.116, 11.744, 10.456]}
@@ -3269,8 +3298,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[4.895, 11.552, 6.649]}
           rotation={[-0.088, -0.128, 0.244]}
           scale={0.557}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.bench005_0.geometry}
           material={materials.bench_mat}
           position={[2.008, 18.89, 7.316]}
@@ -3296,9 +3325,9 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           material={materials.bench_mat}
           position={[-2.951, -20.071, 1.581]}
           rotation={[-0.146, 0.043, -1.32]}
-          scale={0.608}
-        />
-        <mesh
+          scale={0.608} */}
+        {/* /> */}
+        {/* <mesh
           geometry={nodes.bench009_0.geometry}
           material={materials.bench_mat}
           position={[18.737, 4.569, 1.861]}
@@ -3311,22 +3340,22 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[19.635, 5.265, 1.831]}
           rotation={[0.107, 0.077, -1.401]}
           scale={0.608}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.bench011_0.geometry}
           material={materials.bench_mat}
           position={[20.762, 4.997, 1.656]}
           rotation={[0.089, 0.184, -2.231]}
           scale={0.608}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.archer_m_easy001_0.geometry}
           material={materials["Material.033"]}
           position={[19.695, 4.604, 1.859]}
           rotation={[-Math.PI / 2, 0.053, -Math.PI]}
           scale={0.267}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Guest_m_3001_0.geometry}
           material={materials["Material.026"]}
           position={[19.829, 4.996, 1.792]}
@@ -3339,7 +3368,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[19.326, 4.845, 1.825]}
           rotation={[Math.PI / 2, 1.217, 0]}
           scale={0.267}
-        />
+        /> */}
         <mesh
           geometry={nodes.Fireplace001_0.geometry}
           material={materials["Material.037"]}
@@ -3347,7 +3376,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-0.024, 0.024, -1.538]}
           scale={0.35}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.VikingShipObjects176_0.geometry}
           material={materials.Objects}
           position={[-9.236, 1.772, 10.893]}
@@ -3407,8 +3436,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           material={materials.Objects}
           position={[-8.606, 2.11, 10.867]}
           scale={0.22}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Clean_3_AO018_0.geometry}
           material={materials["Material.001"]}
           position={[-12.291, 15.182, 10.507]}
@@ -3526,8 +3555,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-8.554, 3.015, 10.795]}
           rotation={[0.562, -0.209, 2.244]}
           scale={0.22}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Guest_f_1001_0.geometry}
           material={materials["Material.032"]}
           position={[-8.844, 3.459, 10.557]}
@@ -3547,8 +3576,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[8.572, 10.238, 4.539]}
           rotation={[Math.PI / 2, -0.241, 0]}
           scale={0.267}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Guest_f_2001_0.geometry}
           material={materials["Material.031"]}
           position={[1.615, 18.034, 7.441]}
@@ -3568,7 +3597,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[5.125, 11.09, 6.732]}
           rotation={[-Math.PI / 2, 1.422, -Math.PI]}
           scale={0.267}
-        />
+        /> */}
         <mesh
           geometry={nodes.House_4_AO007_0.geometry}
           material={materials.House_4_AO_tex}
@@ -3618,7 +3647,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[Math.PI / 2, 0.654, 0]}
           scale={0.388}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes["Deer-ver1001_0"].geometry}
           material={materials["Material.007"]}
           position={[8.983, -5.359, 3.219]}
@@ -3673,7 +3702,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-1.883, 18.381, 1.691]}
           rotation={[2.938, 0.983, -2.858]}
           scale={0.238}
-        />
+        /> */}
         <mesh
           geometry={nodes.SFMC_geo12435_Main_grp001_0.geometry}
           material={materials["Material.034"]}
@@ -3695,7 +3724,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[Math.PI / 2, 1.535, 0]}
           scale={0.296}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.archer_m_easy002_0.geometry}
           material={materials["Material.033"]}
           position={[3.639, 7.468, 6.87]}
@@ -3708,15 +3737,15 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[0.627, -20.636, 1.461]}
           rotation={[-Math.PI / 2, 1.112, Math.PI]}
           scale={0.267}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Plane003_0.geometry}
           material={materials["color.003"]}
           position={[0.381, -20.485, 1.364]}
           rotation={[0.1, -0.437, 0.424]}
           scale={0.296}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes["Bull-ver2001_0"].geometry}
           material={materials["Material.007"]}
           position={[6.531, 6.455, 3.947]}
@@ -3750,7 +3779,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[4.555, 6.737, 3.965]}
           rotation={[0.064, 0.07, 1.863]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.pCube13006_0.geometry}
           material={materials["Ravens.001"]}
@@ -3758,13 +3787,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.462, -0.549, -0.07]}
           scale={0.244}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.pCube13007_0.geometry}
           material={materials["Ravens.001"]}
           position={[-11.454, 4.137, 12.201]}
           rotation={[-1.439, -0.796, -3.061]}
           scale={0.244}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_2_AO001_0.geometry}
           material={materials["Material.009"]}
@@ -3772,13 +3801,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-0.556, -1.219, -2.198]}
           scale={0.165}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Paving_3_AO005_0.geometry}
           material={materials["Material.009"]}
           position={[11.489, 2.611, 2.365]}
           rotation={[1.639, 1.149, 0.014]}
           scale={0.341}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_1_AO008_0.geometry}
           material={materials["Material.009"]}
@@ -3793,7 +3822,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-1.232, -0.383, -2.828]}
           scale={0.165}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Paving_1_AO009_0.geometry}
           material={materials["Material.009"]}
           position={[19.592, 2.365, 1.764]}
@@ -3806,15 +3835,15 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[21.321, 3.179, 1.633]}
           rotation={[1.657, -0.667, 0.128]}
           scale={0.363}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_path_1004_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[20.593, 2.516, 1.618]}
           rotation={[0.023, 0.203, 1.966]}
           scale={[0.504, 0.5, 0.271]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Shed_AO004_0.geometry}
           material={materials.Material}
           position={[5.784, 5.222, 3.683]}
@@ -3841,8 +3870,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[6.887, 6.674, 3.705]}
           rotation={[0.969, 1.397, 0.586]}
           scale={0.4}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Clean_3_AO052_0.geometry}
           material={materials["Material.001"]}
           position={[6.949, 7.303, 3.798]}
@@ -3869,8 +3898,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-8.351, 2.456, 11.033]}
           rotation={[1.5, 0.199, -0.908]}
           scale={0.392}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Fencing_Wood_Clean_3_AO053_0.geometry}
           material={materials["Material.001"]}
           position={[6.513, 8.352, 4.091]}
@@ -3883,7 +3912,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[5.973, 8.719, 4.425]}
           rotation={[-1.666, 0.598, -2.675]}
           scale={0.4}
-        />
+        /> */}
         <mesh
           geometry={nodes.mff_tree_maple010_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
@@ -3898,13 +3927,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[0.14, 0.069, 0.356]}
           scale={[0.581, 0.579, 0.46]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_tree_pine_1010_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[6.708, 9.255, 4.454]}
           rotation={[0.252, 0.086, 1.958]}
           scale={[0.67, 0.65, 0.659]}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_2_AO003_0.geometry}
           material={materials["Material.009"]}
@@ -3926,13 +3955,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-1.465, -0.025, 3.139]}
           scale={0.466}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Paving_4_AO009_0.geometry}
           material={materials["Material.009"]}
           position={[9.532, 9.48, 4.324]}
           rotation={[1.725, 0.397, -0.055]}
           scale={0.582}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_2_AO005_0.geometry}
           material={materials["Material.009"]}
@@ -3940,13 +3969,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.908, 0.116, -0.199]}
           scale={[0.321, 0.365, 0.326]}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_4_AO008_0.geometry}
           material={materials.House_4_AO_tex}
           position={[7.102, 12.298, 5.338]}
           rotation={[1.769, 0.265, -0.021]}
           scale={0.3}
-        />
+        /> */}
         <mesh
           geometry={nodes.Tower_3_AO004_0.geometry}
           material={materials.Tower_tex_3}
@@ -3954,28 +3983,28 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[1.699, -0.62, -0.139]}
           scale={0.3}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.House_2_AO009_0.geometry}
           material={materials.House_2_AO_tex}
           position={[5.353, 14.696, 6.038]}
           rotation={[1.604, -0.622, -0.206]}
           scale={0.3}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Paving_4_AO010_0.geometry}
           material={materials["Material.009"]}
           position={[8.223, 13.487, 5.535]}
           rotation={[1.781, 0.465, 0.013]}
           scale={0.466}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Paving_3_AO006_0.geometry}
           material={materials["Material.009"]}
           position={[8.929, 12.618, 5.391]}
           rotation={[2.111, 1.107, -0.294]}
           scale={0.199}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Paving_2_AO006_0.geometry}
           material={materials["Material.009"]}
           position={[7.124, 15.083, 5.933]}
@@ -3988,14 +4017,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[2.648, 13.801, 6.474]}
           rotation={[-1.499, 0.335, -2.976]}
           scale={[0.321, 0.365, 0.326]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.Paving_2_AO008_0.geometry}
           material={materials["Material.009"]}
           position={[3.833, 15.453, 6.69]}
           rotation={[-1.542, 1.029, -2.88]}
           scale={[0.321, 0.365, 0.326]}
-        />
+        /> */}
         {/* <mesh
           geometry={nodes.Plane004_0.geometry}
           material={materials.Water}
@@ -4112,7 +4141,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-43.458, -7.896, 44.804]}
           scale={2.297}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Stones_1_AO000_0.geometry}
           material={materials["Material.013"]}
           position={[-4.031, 19.704, 0.228]}
@@ -4146,7 +4175,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[25.099, -4.573, 0.634]}
           rotation={[1.618, -0.638, -0.043]}
           scale={0.252}
-        />
+        /> */}
         <mesh
           geometry={nodes.Paving_3_AO000_0.geometry}
           material={materials["Material.009"]}
@@ -4175,7 +4204,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           rotation={[-1.611, -1.429, 3.114]}
           scale={0.394}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.mff_stone_path_0000_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[5.679, 16.259, 6.328]}
@@ -4209,8 +4238,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-3.31, 18.471, 10.786]}
           rotation={[1.472, -0.437, 0.193]}
           scale={0.333}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_0000_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-1.008, 4.449, -10.296]}
@@ -4237,15 +4266,15 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-5.098, 17.711, -42.044]}
           rotation={[-2.34, 0.847, -1.028]}
           scale={[5.031, 4.647, 4.15]}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.mff_stone_0057_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
           position={[-11.464, 2.655, -31.24]}
           rotation={[-1.129, -0.109, 1.215]}
           scale={1.918}
-        />
-        <mesh
+        /> */}
+        {/* <mesh
           geometry={nodes.stall2000_0.geometry}
           material={materials["Material.038"]}
           position={[-11.161, 8.563, 10.807]}
@@ -4272,7 +4301,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
           position={[-13.641, 9.238, 10.941]}
           rotation={[0, 0, -1.822]}
           scale={[0.331, 0.197, 0.006]}
-        />
+        /> */}
         {/* <mesh
           geometry={nodes.Cube003_0.geometry}
           material={materials["Material.021"]}

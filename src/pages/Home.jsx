@@ -9,7 +9,7 @@ const Home = () => {
   const [isRotating, setIsRotating] = useState(false);
   const adjustIslandToScreen = () => {
     let screenScale = null;
-    let screenPosition = [0, -6.5, -93];
+    let screenPosition = [-10, -20.5, -57];
     let rotation = [0.3, 4.7, 0];
     if (window.innerWidth < 768) {
       screenScale = [0.9, 0.9, 0.9];
@@ -62,12 +62,12 @@ const Home = () => {
             isRotating={isRotating}
             setIsRotating={setIsRotating}
           />
-          <Plane
+          {/* <Plane
             position={planePosition}
             scale={planeScale}
             isRotating={isRotating}
             rotation={[0, 20, 0]}
-          />
+          /> */}
         </Suspense>
       </Canvas>
     </section>
