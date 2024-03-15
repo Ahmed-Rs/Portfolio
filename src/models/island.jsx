@@ -14,7 +14,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import islandScene from "../assets/3d/issum_the_town_on_capital_isle.glb";
 import { a } from "@react-spring/three";
 
-const Island = ({ isRotating, setIsRotating, ...props }) => {
+const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
   const islandRef = useRef();
   const { gl, viewport } = useThree();
   const { nodes, materials } = useGLTF(islandScene);
@@ -70,6 +70,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
       if (Math.abs(rotationSpeed.current) < 0.001) {
         rotationSpeed.current = 0; // Si la vitesse de rotation est inférieure à 0.001, on la met à 0
       }
+      islandRef.current.rotation.y += rotationSpeed.current; // On attribue à l'île la vitesse de rotation dotée de l'effet décélération
+      // Explication: avec !isRotating, cela signifie qu'on a relâché le clique de la souris eet islandRef.current.rotation.y vaut donc "0", c'est là que rotationSpeed.current intervient pour donner un effet de poursuite de la rotation sachant que sa nouvelle valeur est celle couplée à dumpingFactor "rotationSpeed.current *= dampingFactor
     } else {
       // si rotation
       const rotation = islandRef.current.rotation.y; // On récupère la valeur de la rotation
@@ -77,22 +79,22 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
         ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
       // Set the current stage based on the island's orientation
-      // switch (true) {
-      //   case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
-      //     setCurrentStage(4);
-      //     break;
-      //   case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
-      //     setCurrentStage(3);
-      //     break;
-      //   case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
-      //     setCurrentStage(2);
-      //     break;
-      //   case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
-      //     setCurrentStage(1);
-      //     break;
-      //   default:
-      //     setCurrentStage(null);
-      // }
+      switch (true) {
+        case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
+          setCurrentStage(4);
+          break;
+        case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
+          setCurrentStage(3);
+          break;
+        case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
+          setCurrentStage(2);
+          break;
+        case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
+          setCurrentStage(1);
+          break;
+        default:
+          setCurrentStage(null);
+      }
     }
   });
 
