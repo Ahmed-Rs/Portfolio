@@ -4,6 +4,7 @@ import Loader from "../components/Loader";
 import Island from "../models/Island";
 import Sky from "../models/Sky";
 import Plane from "../models/Plane";
+import Plane2 from "../models/Plane2";
 
 const Home = () => {
   const [isRotating, setIsRotating] = useState(false);
@@ -11,8 +12,8 @@ const Home = () => {
 
   const adjustIslandToScreen = () => {
     let screenScale = null;
-    let screenPosition = [-10, -20.5, -57];
-    let rotation = [0.3, 4.7, 0];
+    let screenPosition = [-10, -12.5, -45];
+    let rotation = [0.5, 4.7, 0];
     if (window.innerWidth < 768) {
       screenScale = [0.9, 0.9, 0.9];
     } else {
@@ -56,7 +57,7 @@ const Home = () => {
             groundColor="#000000"
             intensity={1}
           />
-          <Sky />
+          <Sky isRotating={isRotating} />
           <Island
             position={islandPosition}
             scale={islandScale}
@@ -70,6 +71,12 @@ const Home = () => {
             scale={planeScale}
             isRotating={isRotating}
             rotation={[0, 1.6, -0.1]}
+          />
+          <Plane2
+            // position={planePosition}
+            // scale={planeScale}
+            isRotating={isRotating}
+            // rotation={[-1, 6, -0.1]}
           />
         </Suspense>
       </Canvas>
