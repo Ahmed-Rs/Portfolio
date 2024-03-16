@@ -14,7 +14,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import islandScene from "../assets/3d/issum_the_town_on_capital_isle.glb";
 import { a } from "@react-spring/three";
 
-const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
+const Island = ({
+  isRotating,
+  setIsRotating,
+  currentStage,
+  setCurrentStage,
+  ...props
+}) => {
   const islandRef = useRef();
   const { gl, viewport } = useThree();
   const { nodes, materials } = useGLTF(islandScene);
@@ -97,7 +103,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
       }
     }
   });
-
+  console.log("currentStage", currentStage);
   useEffect(() => {
     const canvas = gl.domElement; // nous avons wrappé dans Home le tout dans <Canvas/>
     canvas.addEventListener("mousedown", handlePointerDown); // On ne touche pas l'écran (DOM (document)) mais le canvas en cliquant avec la souris
