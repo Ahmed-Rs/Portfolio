@@ -18,13 +18,29 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-
-      // formRef.current.reset();
-      alert("Message envoyé avec succès !");
-      setContactForm({ name: "", email: "", message: "" });
-    }, 2000);
+    emailjs
+      .send(
+        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: contactForm.name,
+          to_name: "Ahmed",
+          from_email: contactForm.email,
+          to_email: "wagentester4@gmail.com",
+          message: contactForm.message,
+        },
+        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
+      )
+      .then(() => {
+        setLoading(false);
+        alert("Message envoyé avec succès !");
+      })
+      .catch((error) => {
+        setLoading(false);
+        alert("Problème lors de l'envoi du message !");
+        console.error("Error: ", error);
+      });
+    setContactForm({ name: "", email: "", message: "" });
   };
 
   return (
