@@ -44,20 +44,25 @@ const Contact = () => {
   };
 
   return (
-    <section className="relative flex lg:flex-row flex-col max-container">
-      <div className="flex flex-col flex-1 min-w-[50%]">
-        <h1 className="head-text">Contactez-moi</h1>
+    <section className="relative flex flex-col lg:flex-row items-center justify-center bg-gray-50 py-12 px-4 lg:px-8">
+      <div className="flex flex-col flex-1 min-w-[50%] max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
+          Contactez-moi
+        </h1>
         <form
           ref={formRef}
-          className="flex flex-col gap-6 w-full mt-14"
+          className="flex flex-col gap-4 w-full mt-4 bg-white shadow-lg rounded-lg p-6"
           onSubmit={handleSubmit}
         >
-          <label htmlFor="" className="font-semibold">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
             Nom
             <input
               type="text"
               name="name"
-              className="input"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               placeholder="Marc"
               value={contactForm.name}
               onChange={handleChange}
@@ -65,12 +70,15 @@ const Contact = () => {
               onBlur={handleOnBlur}
             />
           </label>
-          <label htmlFor="" className="font-semibold">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
             Email
             <input
               type="email"
               name="email"
-              className="input"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               placeholder="marc@dupuis.com"
               value={contactForm.email}
               onChange={handleChange}
@@ -78,13 +86,16 @@ const Contact = () => {
               onBlur={handleOnBlur}
             />
           </label>
-          <label htmlFor="" className="font-semibold">
+          <label
+            htmlFor="message"
+            className="block text-sm font-medium text-gray-700"
+          >
             Ton message
             <textarea
-              type="text"
               name="message"
-              className="input"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               placeholder="Dites moi tout !"
+              rows="4"
               value={contactForm.message}
               onChange={handleChange}
               onFocus={handleOnFocus}
@@ -93,7 +104,7 @@ const Contact = () => {
           </label>
           <button
             type="submit"
-            className="btn"
+            className="mt-4 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
             onFocus={handleOnFocus}
             onBlur={handleOnBlur}
             disabled={loading}
