@@ -8,18 +8,13 @@ const Plane2 = ({ isRotating }) => {
   const { scene, animations } = useGLTF(planeScene);
   const { actions } = useAnimations(animations, plane2Ref);
   useEffect(() => {
-    //   // if (isRotating) {
     actions["Take 001"].play();
-    //   // } else {
-    //   //   actions["Take 001"].stop();
-    // }
   }, [actions]);
 
   useFrame(({ clock, camera }) => {
     // Mouvement sinusoïdal sur l'axe Y
     plane2Ref.current.position.y = Math.sin(clock.elapsedTime) * 5.2 + 60;
     // Encadrement dans l'écran sur l'axe X par rapport à la position de la caméra
-
     if (plane2Ref.current.position.x > camera.position.x + 10) {
       // L'avion fait demi-tour une fois arrivé à la fin de l'écran
       plane2Ref.current.rotation.y = 2 * Math.PI;

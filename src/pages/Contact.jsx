@@ -1,5 +1,8 @@
-import { useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+import { Canvas } from "@react-three/fiber";
+import Helicopter from "../models/Helicopter";
+import Loader from "../components/Loader";
 
 const Contact = () => {
   const formRef = useRef(null);
@@ -9,6 +12,21 @@ const Contact = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const [currentAnimation, setCurrentAnimation] = useState("Idle");
+  const [currentSpeed, setCurrentSpeed] = useState(0.1);
+  const [filledInputs, setFilledInputs] = useState(0);
+
+  // Décompte du nombre d'inputs remplis
+  const updateFilledInputs = () => {
+    const count = Object.values(contactForm).filter(
+      (value) => value.trim() !== ""
+    ).length;
+    setFilledInputs(count);
+  };
+  useEffect(() => {
+    updateFilledInputs();
+  }, [contactForm]);
+  console.log("filledInputs", filledInputs);
 
   const handleChange = (e) => {
     setContactForm({ ...contactForm, [e.target.name]: e.target.value });
@@ -34,17 +52,19 @@ const Contact = () => {
       .then(() => {
         setLoading(false);
         alert("Message envoyé avec succès !");
+        // On enclenchera l'animation de décollage de l'hélicoptère une fois le message envoyé
       })
       .catch((error) => {
         setLoading(false);
         alert("Problème lors de l'envoi du message !");
+        setCurrentAnimation("Static Pose");
         console.error("Error: ", error);
       });
     setContactForm({ name: "", email: "", message: "" });
   };
 
   return (
-    <section className="relative flex flex-col lg:flex-row items-center justify-center bg-gray-50 py-12 px-4 lg:px-8">
+    <section className="relative flex flex-col lg:flex-row items-center justify-center h-screen bg-gray-50 py-12 px-4 lg:px-8">
       <div className="flex flex-col flex-1 min-w-[50%] max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
           Contactez-moi
@@ -112,6 +132,27 @@ const Contact = () => {
             {loading ? "Envoi en cours..." : "Envoyer"}
           </button>
         </form>
+      </div>
+      <div className="lg:w1/2 w-full lg:h-auto md:h-[550px] h-[350px]">
+        <Canvas
+          camera={{
+            position: [0, 0, 5],
+            fov: 60,
+            near: 0.1,
+            far: 1000,
+          }}
+        >
+          <directionalLight position={[1.5, 2, 1]} intensity={20} />
+          <Suspense fallback={<Loader />}>
+            <Helicopter
+              position={[0, 0, 0]}
+              rotation={[10.8, 41.2, 17.2]}
+              scale={[0.03, 0.03, 0.03]}
+              currentAnimation={currentAnimation}
+              filledInputs={filledInputs}
+            />
+          </Suspense>
+        </Canvas>
       </div>
     </section>
   );
