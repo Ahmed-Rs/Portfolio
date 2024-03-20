@@ -145,7 +145,7 @@ const Contact = () => {
           <directionalLight position={[1.5, 2, 1]} intensity={20} />
           <Suspense fallback={<Loader />}>
             <Helicopter
-              position={[0, 0, 0]}
+              position={[0, 0.04, 0]}
               rotation={[10.8, 41.2, 17.2]}
               scale={[0.03, 0.03, 0.03]}
               currentAnimation={currentAnimation}

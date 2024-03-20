@@ -9,11 +9,12 @@ Title: Shinra Helicopter - Crisis Core
 import { useEffect, useRef } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import scene from "../assets/3d/helicopter.glb";
+import { useFrame } from "@react-three/fiber";
 
 const Helicopter = ({ currentAnimation, filledInputs, ...props }) => {
-  const group = useRef();
+  const helicopterRef = useRef();
   const { nodes, materials, animations } = useGLTF(scene);
-  const { actions } = useAnimations(animations, group);
+  const { actions } = useAnimations(animations, helicopterRef);
   const timeScaleValues = [0.05, 0.1, 0.2, 5];
 
   useEffect(() => {
@@ -23,10 +24,27 @@ const Helicopter = ({ currentAnimation, filledInputs, ...props }) => {
     } else {
       actions["Idle"].stop();
     }
+    console.log(helicopterRef.current.position.y, "helicopterRef");
   }, [actions, currentAnimation, filledInputs]);
 
+  useFrame(() => {
+    // Prise/perte d'altitude progressive si les 3 inputs sont remplis/ou pas
+    // Plafonnement entre 0.04 et 1
+    if (filledInputs === 3) {
+      helicopterRef.current.position.y += 0.01;
+      if (helicopterRef.current.position.y > 1) {
+        helicopterRef.current.position.y = 1;
+      }
+    } else {
+      helicopterRef.current.position.y -= 0.01;
+      if (helicopterRef.current.position.y < 0.04) {
+        helicopterRef.current.position.y = 0.04;
+      }
+    }
+  });
+
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={helicopterRef} {...props} dispose={null}>
       <group name="Sketchfab_Scene">
         <group
           name="Sketchfab_model"
