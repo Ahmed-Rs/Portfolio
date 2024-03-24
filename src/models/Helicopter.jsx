@@ -11,7 +11,13 @@ import { useGLTF, useAnimations } from "@react-three/drei";
 import scene from "../assets/3d/helicopter.glb";
 import { useFrame } from "@react-three/fiber";
 
-const Helicopter = ({ currentAnimation, filledInputs, ...props }) => {
+const Helicopter = ({
+  currentAnimation,
+  filledInputs,
+  flight,
+  setFlight,
+  ...props
+}) => {
   const helicopterRef = useRef();
   const { nodes, materials, animations } = useGLTF(scene);
   const { actions } = useAnimations(animations, helicopterRef);
@@ -24,22 +30,58 @@ const Helicopter = ({ currentAnimation, filledInputs, ...props }) => {
     } else {
       actions["Idle"].stop();
     }
-    console.log(helicopterRef.current.position.y, "helicopterRef");
-  }, [actions, currentAnimation, filledInputs]);
+  }, [actions, currentAnimation, filledInputs, flight, setFlight]);
 
+  console.log("flight", flight);
   useFrame(() => {
     // Prise/perte d'altitude progressive si les 3 inputs sont remplis/ou pas
     // Plafonnement entre 0.04 et 1
-    if (filledInputs === 3) {
-      helicopterRef.current.position.y += 0.01;
-      if (helicopterRef.current.position.y > 1) {
-        helicopterRef.current.position.y = 1;
+    if (!flight) {
+      helicopterRef.current.position.z -= 0.03;
+      if (helicopterRef.current.position.z < 0) {
+        helicopterRef.current.position.z = 0;
+      }
+      if (filledInputs === 3) {
+        helicopterRef.current.position.y += 0.01;
+        if (helicopterRef.current.position.y > -0.54) {
+          helicopterRef.current.position.y = -0.54;
+        }
+      } else {
+        helicopterRef.current.position.y -= 0.01;
+        if (helicopterRef.current.position.y < -1.7) {
+          helicopterRef.current.position.y = -1.7;
+        }
       }
     } else {
-      helicopterRef.current.position.y -= 0.01;
-      if (helicopterRef.current.position.y < 0.04) {
-        helicopterRef.current.position.y = 0.04;
+      // Travailler sur le mouvement de l'hélicoptère après l'envoi du formulaire
+      helicopterRef.current.position.z -= 0.03;
+      helicopterRef.current.rotation.z += 0.02;
+      if (helicopterRef.current.position.z > 1) {
+        helicopterRef.current.position.z = 1;
       }
+
+      helicopterRef.current.position.y += 0.05;
+      helicopterRef.current.rotation.y += 0.008;
+      if (helicopterRef.current.position.y > 10) {
+        helicopterRef.current.position.y = 10;
+      }
+
+      helicopterRef.current.position.x += 0.05;
+      helicopterRef.current.rotation.x -= 0.0001;
+      if (helicopterRef.current.position.x > 11) {
+        helicopterRef.current.position.x = 11;
+      }
+
+      setTimeout(() => {
+        helicopterRef.current.position.x = 0.3;
+        helicopterRef.current.position.y = 1;
+        helicopterRef.current.position.z = 0.03;
+        helicopterRef.current.rotation.x = 10.8;
+        helicopterRef.current.rotation.y = 41;
+        helicopterRef.current.rotation.z = 17.2;
+        // [0.3, 1, 3]}
+        // rotation={[10.8, 41, 17.2]}
+      }, 5000);
     }
   });
 
