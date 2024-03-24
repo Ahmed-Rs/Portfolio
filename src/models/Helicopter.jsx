@@ -35,7 +35,7 @@ const Helicopter = ({
   console.log("flight", flight);
   useFrame(() => {
     // Prise/perte d'altitude progressive si les 3 inputs sont remplis/ou pas
-    // Plafonnement entre 0.04 et 1
+    // Plafonnement entre -1.7 et -0.54
     if (!flight) {
       helicopterRef.current.position.z -= 0.03;
       if (helicopterRef.current.position.z < 0) {
@@ -72,15 +72,14 @@ const Helicopter = ({
         helicopterRef.current.position.x = 11;
       }
 
+      // Retour à la position initiale après 5 secondes suviant l'envoi du formulaire
       setTimeout(() => {
-        helicopterRef.current.position.x = 0.3;
+        helicopterRef.current.position.x = 0;
         helicopterRef.current.position.y = 1;
         helicopterRef.current.position.z = 0.03;
         helicopterRef.current.rotation.x = 10.8;
         helicopterRef.current.rotation.y = 41;
         helicopterRef.current.rotation.z = 17.2;
-        // [0.3, 1, 3]}
-        // rotation={[10.8, 41, 17.2]}
       }, 5000);
     }
   });
