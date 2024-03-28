@@ -61,9 +61,11 @@ const Island = ({
     if (e.key === "ArrowLeft") {
       if (!isRotating) setIsRotating(true);
       islandRef.current.rotation.y += 0.01 * Math.PI;
+      rotationSpeed.current = 0.012;
     } else if (e.key === "ArrowRight") {
       if (!isRotating) setIsRotating(true);
       islandRef.current.rotation.y -= 0.01 * Math.PI;
+      rotationSpeed.current = -0.012;
     }
   };
   const handleKeyUp = (e) => {
@@ -76,15 +78,15 @@ const Island = ({
       if (Math.abs(rotationSpeed.current) < 0.001) {
         rotationSpeed.current = 0; // Si la vitesse de rotation est inférieure à 0.001, on la met à 0
       }
-      islandRef.current.rotation.y += rotationSpeed.current; // On attribue à l'île la vitesse de rotation dotée de l'effet décélération
-      // Explication: avec !isRotating, cela signifie qu'on a relâché le clique de la souris eet islandRef.current.rotation.y vaut donc "0", c'est là que rotationSpeed.current intervient pour donner un effet de poursuite de la rotation sachant que sa nouvelle valeur est celle couplée à dumpingFactor "rotationSpeed.current *= dampingFactor
+      islandRef.current.rotation.y += rotationSpeed.current; // On attribue à l'île la vitesse de rotation dotée de l'effet de décélération
+      // Explication: avec !isRotating, cela signifie qu'on a relâché le clique de la souris et islandRef.current.rotation.y vaut donc "0", c'est là que rotationSpeed.current intervient pour donner un effet de poursuite de la rotation sachant que sa nouvelle valeur est celle couplée à dumpingFactor "rotationSpeed.current *= dampingFactor
     } else {
       // si rotation
       const rotation = islandRef.current.rotation.y; // On récupère la valeur de la rotation
       const normalizedRotation =
         ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
-      // Set the current stage based on the island's orientation
+      // Met à jour le stage actuel en fonction de l'orientation de l'île
       switch (true) {
         case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
           setCurrentStage(1);
@@ -264,7 +266,7 @@ const Island = ({
           rotation={[0.183, 0.071, 2.435]}
           scale={0.248}
         /> */}
-        //////////////////////////////////////////////////////////////////////////////
+        {/* ////////////////////////////////////////////////////////////////////////////// */}
         <mesh
           geometry={nodes.mff_island_large_0.geometry}
           material={materials.medievalfantasyforest_unwrap}
