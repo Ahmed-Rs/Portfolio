@@ -6,6 +6,8 @@ import Sky from "../models/Sky";
 import Plane from "../models/Plane";
 import Plane2 from "../models/Plane2";
 import PopupInfo from "../components/PopupInfo";
+import sakura from "../assets/song/sakura.mp3";
+import SoundMutter from "../components/Sound";
 
 const Home = () => {
   const [isRotating, setIsRotating] = useState(false);
@@ -77,22 +79,12 @@ const Home = () => {
             isRotating={isRotating}
             rotation={[0, 1.6, -0.1]}
           />
-          <Plane2
-            // position={planePosition}
-            // scale={planeScale}
-            isRotating={isRotating}
-            // rotation={[-1, 6, -0.1]}
-          />
+          <Plane2 isRotating={isRotating} />
         </Suspense>
       </Canvas>
+      <SoundMutter music={sakura} />
     </section>
   );
 };
 
 export default Home;
-
-{
-  /* <div className="absolute top-28 left-0 right-0 z-10 flex justify-center items-center">
-    Hi there
-  </div> */
-}

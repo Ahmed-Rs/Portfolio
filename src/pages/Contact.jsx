@@ -2,6 +2,11 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import emailjs from "@emailjs/browser";
 import Helicopter from "../models/Helicopter";
+import sakura from "../assets/song/sakura.mp3";
+import landing from "../assets/song/landing.mp3";
+import acceleration from "../assets/song/acceleration.mp3";
+import flying from "../assets/song/flying.mp3";
+import SoundMutter from "../components/Sound";
 import Loader from "../components/Loader";
 import useAlert from "../hooks/useAlert";
 import Alert from "../components/Alert";
@@ -18,6 +23,12 @@ const Contact = () => {
   const [currentAnimation, setCurrentAnimation] = useState("Idle");
   const [flight, setFlight] = useState(false);
   const [filledInputs, setFilledInputs] = useState(0);
+  const [currentSoundName, setCurrentSoundName] = useState("");
+  const soundPaths = {
+    landing: landing,
+    acceleration: acceleration,
+    flying: flying,
+  };
   // Décompte du nombre d'inputs remplis
   const updateFilledInputs = () => {
     const count = Object.values(contactForm).filter(
@@ -29,6 +40,26 @@ const Contact = () => {
     updateFilledInputs();
   }, [contactForm]);
   console.log("filledInputs", filledInputs);
+
+  // Choix du son de l'hélicoptère
+  useEffect(() => {
+    const handleSoundtrack = () => {
+      if (!flight) {
+        if (filledInputs >= 0 && filledInputs <= 2) {
+          return "landing"; // Retourne directement la variable landing
+        } else if (filledInputs === 3) {
+          return "acceleration"; // Retourne directement la variable acceleration
+        }
+      } else {
+        return "flying"; // Retourne directement la variable flying
+      }
+      return null; // Retourne null si aucune condition n'est remplie
+    };
+
+    const selectedSoundName = handleSoundtrack();
+    setCurrentSoundName(selectedSoundName);
+    console.log("selectedSoundName", selectedSoundName);
+  }, [filledInputs, flight]);
 
   const handleChange = (e) => {
     setContactForm({ ...contactForm, [e.target.name]: e.target.value });
@@ -172,6 +203,7 @@ const Contact = () => {
           </Suspense>
         </Canvas>
       </div>
+      <SoundMutter music={soundPaths[currentSoundName]} />
     </section>
   );
 };
