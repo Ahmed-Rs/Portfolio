@@ -3,7 +3,7 @@ import {
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
 import "react-vertical-timeline-component/style.min.css";
-import { skills, experiences } from "../constants";
+import { skills, experiences } from "../data";
 import CTA from "../components/CTA";
 
 const About = () => {
@@ -14,14 +14,16 @@ const About = () => {
         <span className="blue-gradient_text font-semibold">Ahmed</span>
       </h1>
       <div className="mt-5 flex flex-col gap-3 text-slate-500">
-        Développeur Web Fullstack basé à Paris, autodidacte depuis le collège et
-        le lycée scientifique, je suis passionné par le développement web et les
-        nouvelles technologies. J'ai une expérience de plus de 2 ans dans le
-        développement web, je suis spécialisé dans le développement de sites et
-        d'applications web. Je suis également passionné par le design et
-        l'ergonomie des sites web, je suis toujours à la recherche de nouvelles
-        idées et de nouvelles technologies pour améliorer mes compétences et mes
-        connaissances.
+        <p>
+          Développeur Web Fullstack basé à Paris, autodidacte depuis le collège
+          et le lycée scientifique, je suis passionné par le développement web
+          et les nouvelles technologies. J'ai une expérience de plus de 2 ans
+          dans le développement web, je suis spécialisé dans le développement de
+          sites et d'applications web. Je suis également passionné par le design
+          et l'ergonomie des sites web, je suis toujours à la recherche de
+          nouvelles idées et de nouvelles technologies pour améliorer mes
+          compétences et mes connaissances.
+        </p>
       </div>
       <div className="flex flex-col py-10">
         <h3 className="subhead-text">Mes Skills</h3>
@@ -55,10 +57,10 @@ const About = () => {
             collège et le lycée scientifique, je suis passionné par le
             développement web et les nouvelles technologies. J'ai une expérience
             de plus de 2 ans dans le développement web, je suis spécialisé dans
-            le développement de sites et d'applications web. Je suis également
-            passionné par le design et l'ergonomie des sites web, je suis
-            toujours à la recherche de nouvelles idées et de nouvelles
-            technologies pour améliorer mes compétences et mes connaissances.
+            le développement de sites et applications web. Je suis également
+            passionné par le design et l'ergonomie des sites web et toujours à
+            la recherche de nouvelles idées et de nouvelles technologies pour
+            améliorer mes compétences et mes connaissances.
           </p>
         </div>
         <div className="mt-12 flex">
