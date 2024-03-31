@@ -43,10 +43,12 @@ const SoundMutter = ({ music }) => {
 
   return (
     <div
-      className="absolute bottom-2 right-2 z-10 cursor-pointer"
+      className="absolute bottom-2 right-2 z-10 cursor-pointer flex flex-col items-center justify-center"
       onClick={handleToggleMusic}
     >
-      <div className="">Sound</div>
+      {/* <div className="bg-transparent bg-opacity-50 p-2 rounded-lg shadow-md">
+        Mute
+      </div> */}
       <img
         src={!playingMusique ? soundoff : soundon}
         alt="Musique mutter"

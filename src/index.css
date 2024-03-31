@@ -37,6 +37,9 @@ body:has(.card[data-color="green"]:hover) {
   .blue-gradient_text {
     @apply bg-gradient-to-r from-[#00c6ff] to-[#0072ff] bg-clip-text text-transparent;
   }
+  .blue-gradient_icon {
+    @apply bg-gradient-to-r from-[#00c6ff] to-[#0072ff];
+  }
 
   .input {
     @apply bg-white border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2.5 font-normal shadow-card;
@@ -76,6 +79,16 @@ body:has(.card[data-color="green"]:hover) {
 
   .cta-text {
     @apply text-blue-400/90 font-extrabold flex-1 text-3xl max-md:text-center;
+  }
+
+  .nav-links {
+    @apply transition-transform duration-700 ease-in-out;
+    transform: translateX(160%);
+  }
+
+  .nav-links-open {
+    @apply flex flex-col  sm:flex sm:flex-row sm:justify-center sm:items-center transform translate-x-[0%];
+    @apply transition-transform duration-700 ease-in-out;
   }
 }
 

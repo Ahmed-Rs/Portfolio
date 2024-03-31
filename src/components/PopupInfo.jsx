@@ -1,10 +1,12 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { arrow } from "../assets/icons";
 
 const PopupLink = ({ text, link, btn }) => {
   return (
-    <div className="text-xl md:text-3xl lg:text-5xl font-bold text-gray-800 drop-shadow-lg p-5 bg-white/70 rounded-lg">
+    <div
+      className="w-full md:max-w-[55%] lg:max
+    -w-[35%] sm:mx-auto text-sm md:text-lg lg:text-lg 2xl:text-2xl font-bold text-gray-800 drop-shadow-lg p-5 bg-white/70 rounded-lg"
+    >
       <p>{text}</p>
       <Link to={link} className="flex justify-center items-center gap-3">
         {btn}
@@ -50,7 +52,7 @@ const popupContent = {
 };
 
 const PopupInfo = ({ currentStage }) => {
-  return <div>{popupContent[currentStage]}</div>;
+  return <>{popupContent[currentStage]}</>;
 };
 
 export default PopupInfo;

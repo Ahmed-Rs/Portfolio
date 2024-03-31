@@ -44,7 +44,7 @@ const Home = () => {
 
   return (
     <section className="w-full h-screen relative">
-      <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
+      <div className="absolute top-16 md:top-16 lg:top-24 left-0 right-0 z-10">
         {currentStage && <PopupInfo currentStage={currentStage} />}
       </div>
       <Canvas
