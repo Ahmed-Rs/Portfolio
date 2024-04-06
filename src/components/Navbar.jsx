@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 export const Navbar = () => {
   const [showNav, setShowNav] = useState(false);
 
+  // Reset de showNav à false pour cacher par défaut la navbar
   useEffect(() => {
     const handleResize = () => {
       if (window.matchMedia("(min-width: 768px)").matches) {
@@ -13,11 +14,8 @@ export const Navbar = () => {
     };
     window.addEventListener("resize", handleResize);
 
-    console.log("showNav", showNav);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  console.log("showNav", showNav);
 
   return (
     <header className="header">
@@ -66,7 +64,6 @@ export const Navbar = () => {
             Contact
           </NavLink>
         </div>
-
         <div className="md:hidden cursor-pointer ml-6 z-20">
           <div
             className={`${showNav ? "hidden" : ""}`}

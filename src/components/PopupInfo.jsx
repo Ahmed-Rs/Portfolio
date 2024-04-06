@@ -7,7 +7,7 @@ const PopupLink = ({ text, link, btn }) => {
       className="w-full md:max-w-[55%] lg:max
     -w-[35%] sm:mx-auto text-sm md:text-lg lg:text-lg 2xl:text-2xl font-bold text-gray-800 drop-shadow-lg p-5 bg-white/70 rounded-lg"
     >
-      <p>{text}</p>
+      <p className="text-center">{text}</p>
       <Link to={link} className="flex justify-center items-center gap-3">
         {btn}
         <img src={arrow} className="w-4 h-4 object-contain" alt="" />
@@ -20,7 +20,7 @@ const popupContent = {
   1: (
     <PopupLink
       text={
-        "Salut, je m'appelle Ahmed, je suis développeur web fullstack JS. Je vais te montrer mes projets et mes compétences. Débarque sur l'îlot..."
+        "Salut, je m'appelle Ahmed, je suis développeur web fullstack JS. Je vais te montrer mes projets et mes compétences."
       }
       link={"/about"}
       btn={"En savoir plus"}

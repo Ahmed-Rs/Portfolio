@@ -18,9 +18,9 @@ const About = () => {
           Développeur Web Fullstack basé à Paris, autodidacte depuis le collège
           et le lycée scientifique, je suis passionné par le développement web
           et les nouvelles technologies. J'ai une expérience de plus de 2 ans
-          dans le développement web, je suis spécialisé dans le développement de
-          sites et d'applications web. Je suis également passionné par le design
-          et l'ergonomie des sites web, je suis toujours à la recherche de
+          dans le développement web, je suis spécialisé dans la création de
+          sites et applications. Je suis également passionné par le design et
+          l'ergonomie des sites web, je suis toujours à la recherche de
           nouvelles idées et de nouvelles technologies pour améliorer mes
           compétences et mes connaissances.
         </p>
@@ -57,9 +57,9 @@ const About = () => {
             collège et le lycée scientifique, je suis passionné par le
             développement web et les nouvelles technologies. J'ai une expérience
             de plus de 2 ans dans le développement web, je suis spécialisé dans
-            le développement de sites et applications web. Je suis également
-            passionné par le design et l'ergonomie des sites web et toujours à
-            la recherche de nouvelles idées et de nouvelles technologies pour
+            la création de sites et applications. Je suis également passionné
+            par le design et l'ergonomie des sites web et toujours à la
+            recherche de nouvelles idées et de nouvelles technologies pour
             améliorer mes compétences et mes connaissances.
           </p>
         </div>

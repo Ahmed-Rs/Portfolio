@@ -1,10 +1,10 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useState } from "react";
 import Loader from "../components/Loader";
-import Island from "../models/Island";
-import Sky from "../models/Sky";
-import Plane from "../models/Plane";
-import Plane2 from "../models/Plane2";
+import Island from "../models/Island.jsx";
+import Sky from "../models/Sky.jsx";
+import Plane from "../models/Plane.jsx";
+import Plane2 from "../models/Plane2.jsx";
 import PopupInfo from "../components/PopupInfo";
 import sakura from "../assets/song/sakura.mp3";
 import SoundMutter from "../components/Sound";
